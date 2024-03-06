@@ -1,23 +1,42 @@
 import individu
-import numpy as np
+import candidats
 
-class population:
-    def __init__(self, n:int) -> None:
-        self.pop = [individu.individu(k/n) for k in range (n + 1)]
-        self.age = 0
 
-    def evolution(self):
-        interactions = []
-        for k in range (len(self.pop)):
-            interactions.extend([k for i in range (self.pop[k].sociabilisation)])
-        interactions = np.random.permutation(interactions)
-        j = 0
-        k = 0
-        while k < len(self.pop):
-            i = 0
-            while i < self.pop[k].sociabilisation:
-                if k != interactions[k + j + i]:
-                    self.pop[k].interaction(self.pop[interactions[k + j + i]])
-                i+=1
-            j+=i - 1
-            k+=1
+
+class Population:
+
+    def __init__(self, opinion:Opinion) -> None:
+        self.individus # liste d'individus
+        self.candidats # liste des candidats
+
+        # D'autres parametre liés au type de société qu'on représente : beaucoup ou pas beaucoup d'intéraction, société très polarisée ou pas trop...
+        #self. ...
+
+    def etape_temporelle(self):
+        pass
+        # Boucle de interaction()
+    
+    def affiche(self):
+        pass
+
+    def election_type_1(self):
+        pass
+
+    def election_type_2(self):
+        pass
+
+def interaction(self): # A refaire
+    if self.opinion > b.opinion:
+        return individu.interaction(b, self)
+    else:
+        u = np.random.binomial(1, np.exp((-2) * (b.opinion - self.opinion)))
+        if u:
+            individu.interaction_positive(self, b)
+        else:
+            individu.interaction_negative(self, b)
+
+def interaction_positive(self, b):
+    pass
+
+def interaction_negative(self, b):
+    pass
