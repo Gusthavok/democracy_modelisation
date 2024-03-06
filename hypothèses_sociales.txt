@@ -1,1 +1,7 @@
+Interractions : 
 interraction positive ou negative sur tous les sujets
+
+
+
+Individus :
+Chaque individu dispose d'une capacité a influencer les autres, et une capacité de sociabilisation. Cees deux capacités sont supposées indépendantes
