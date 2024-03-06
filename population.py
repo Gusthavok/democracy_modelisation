@@ -1,5 +1,10 @@
 import individu
 import candidats
+import numpy as np
+
+coef_pos = 1.05
+coef_neg = 1.1
+
 
 class Population:
 
@@ -30,9 +35,22 @@ class Population:
     def placement_candidats_type_1():
         pass
 
+
     def etape_temporelle(self):
-        pass
-        # Boucle de interaction()
+        interactions = []
+        for k in range (len(self.pop)):
+            interactions.extend([k for i in range (self.pop[k].sociabilisation)])
+        interactions = np.random.permutation(interactions)
+        j = 0
+        k = 0
+        while k < len(self.pop):
+            i = 0
+            while i < self.pop[k].sociabilisation:
+                if k != interactions[k + j + i]:
+                    self.pop[k].interaction(self.pop[interactions[k + j + i]])
+                i+=1
+            j+=i - 1
+            k+=1
     
     def affiche(self):
         pass
@@ -48,18 +66,13 @@ class Population:
             raise ValueError("Impossible de réaliser une élection avec aucun candidats")
         pass
 
-def interaction(self): # A refaire
-    if self.opinion > b.opinion:
-        return individu.interaction(b, self)
+def interaction(a,b):
+    u = np.random.binomial(1, np.exp((-2) * np.linalg.norm(a.opinion - b.opinion)))
+    if u:
+        m = (a.influence*a.opinion + b.influence*b.opinion)/(a.influence + b.influence)
+        a.opinion = a.opinion + coef_pos*(m - a.opinion)
+        b.opinion = b.opinion + coef_neg*(m - b.opinion)
     else:
-        u = np.random.binomial(1, np.exp((-2) * (b.opinion - self.opinion)))
-        if u:
-            individu.interaction_positive(self, b)
-        else:
-            individu.interaction_negative(self, b)
-
-def interaction_positive(self, b):
-    pass
-
-def interaction_negative(self, b):
-    pass
+        a.opinion = a.opinion*(1-coef_neg)
+        b.opinion = 1 - (1 - b.opinion)*(1-coef_neg)    
+    
