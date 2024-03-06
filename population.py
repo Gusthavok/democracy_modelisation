@@ -4,7 +4,7 @@ import numpy as np
 
 
 coef_pos = 1.05
-ceof_neg = 1.1
+coef_neg = 1.1
 
 
 class Population:
@@ -64,7 +64,7 @@ def interaction(a,b):
     if u:
         m = (a.influence*a.opinion + b.influence*b.opinion)/(a.influence + b.influence)
         a.opinion = a.opinion + coef_pos*(m - a.opinion)
-        b.opinion = b.opinion + coef_neg*(m - b.opinion)
+        b.opinion = b.opinion + coef_pos*(m - b.opinion)
     else:
         a.opinion = a.opinion*(1-coef_neg)
         b.opinion = 1 - (1 - b.opinion)*(1-coef_neg)    
