@@ -2,15 +2,16 @@ import individu
 import candidats
 import numpy as np
 
+
+coef_pos = 1.05
+ceof_neg = 1.1
+
+
 class Population:
 
     def __init__(self) -> None:
         self.individus = [] # liste d'individus
         self.candidats = [] # liste des candidats
-
-        self.coef_pos = 1.05
-        self.ceof_neg = 1.1
-
         # parametre liés au type de société qu'on représente : beaucoup ou pas beaucoup d'intéraction, société très polarisée ou pas trop...
         
         self.ecart_type_influence = 1
