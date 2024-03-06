@@ -1,6 +1,6 @@
 import individu
-import candidats
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 coef_pos = 1.05
@@ -18,13 +18,21 @@ class Population:
         self.ecart_type_sociabilisation = 1
 
     def initialisation_aleatoire_population(self, taille_population:int, taille_opinion:int, taille_statut_social:int, type_population:int = "completement_aleatoire"):
+
+        self.taille_opinion = taille_opinion
+
         if len(self.individus) != 0:
             raise ValueError("Initialisation aléatoire sur une population non vide")
         
         if type_population == "completement_aleatoire":
-            self.individus = [individu.Individu(taille_opinion, taille_statut_social).set_completement_aleatoire() for _ in range(taille_population)]
+            for _ in range(taille_population):
+                i = individu.Individu(taille_opinion, taille_statut_social)
+                i.set_completement_aleatoire(self.ecart_type_influence, self.ecart_type_sociabilisation)
+                self.individus.append(i)
         elif type_population == "representatif_de_la_realite":
-            self.individus = [individu.Individu(taille_opinion, taille_statut_social).set_representatif_de_la_realite() for _ in range(taille_population)]
+                i = individu.Individu(taille_opinion, taille_statut_social)
+                i.set_representatif_de_la_realite(self.ecart_type_influence, self.ecart_type_sociabilisation)
+                self.individus.append(i)
         else:
             raise ValueError("le type de population utilisé n'est pas valide")
 
@@ -37,16 +45,19 @@ class Population:
 
 
     def etape_temporelle(self):
-        for a in self.pop:
+        for a in self.individus:
             for i in range(a.sociabilisation):
-                interaction(a,np.random.choice(self.pop))
+                interaction(a,np.random.choice(self.individus))
         
     def evolution(self,n):
         for i in range(n):
             self.etape_temporelle
     
     def affiche(self):
-        pass
+        if self.taille_opinion > 2:
+            raise ValueError("impossible de plot en dimension > 2")
+        plt.scatter([a.opinion[0] for a in self.individus],[a.opinion[1] for a in self.individus])
+        plt.show()
     
     ## différents types d'élections possible
     def election_type_1(self):
