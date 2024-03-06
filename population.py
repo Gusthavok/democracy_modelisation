@@ -2,6 +2,7 @@ import individu
 import candidats
 import numpy as np
 
+
 coef_pos = 1.05
 coef_neg = 1.1
 
@@ -11,7 +12,6 @@ class Population:
     def __init__(self) -> None:
         self.individus = [] # liste d'individus
         self.candidats = [] # liste des candidats
-
         # parametre liés au type de société qu'on représente : beaucoup ou pas beaucoup d'intéraction, société très polarisée ou pas trop...
         
         self.ecart_type_influence = 1
@@ -37,20 +37,13 @@ class Population:
 
 
     def etape_temporelle(self):
-        interactions = []
-        for k in range (len(self.pop)):
-            interactions.extend([k for i in range (self.pop[k].sociabilisation)])
-        interactions = np.random.permutation(interactions)
-        j = 0
-        k = 0
-        while k < len(self.pop):
-            i = 0
-            while i < self.pop[k].sociabilisation:
-                if k != interactions[k + j + i]:
-                    self.pop[k].interaction(self.pop[interactions[k + j + i]])
-                i+=1
-            j+=i - 1
-            k+=1
+        for a in self.pop:
+            for i in range(a.sociabilisation):
+                interaction(a,np.random.choice(self.pop))
+        
+    def evolution(self,n):
+        for i in range(n):
+            self.etape_temporelle
     
     def affiche(self):
         pass
@@ -71,7 +64,7 @@ def interaction(a,b):
     if u:
         m = (a.influence*a.opinion + b.influence*b.opinion)/(a.influence + b.influence)
         a.opinion = a.opinion + coef_pos*(m - a.opinion)
-        b.opinion = b.opinion + coef_neg*(m - b.opinion)
+        b.opinion = b.opinion + coef_pos*(m - b.opinion)
     else:
         a.opinion = a.opinion*(1-coef_neg)
         b.opinion = 1 - (1 - b.opinion)*(1-coef_neg)    
