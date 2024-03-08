@@ -1,12 +1,12 @@
 import numpy as np
 
 class Individu:
-    def __init__(self, taille_opinion:int, taille_statut_social:int) -> None:
+    def __init__(self, taille_opinion:int, taille_place_societe:int) -> None:
         self.taille_opinion = taille_opinion
-        self.taille_statut_social = taille_statut_social
+        self.taille_place_societe = taille_place_societe
 
         self.opinion = np.array([0 for j in range(taille_opinion)])
-        self.statut_social = np.array([0 for j in range(taille_statut_social)])
+        self.place_societe = np.array([0 for j in range(taille_place_societe)])
 
         self.influence = 1
         self.sociabilisation = 1
@@ -17,7 +17,7 @@ class Individu:
         self.sociabilisation = round(1+ np.random.exponential(1/ecart_type_sociabilisation))
 
         self.opinion = np.random.random(self.taille_opinion)
-        self.statut_social = np.random.random(self.taille_statut_social)
+        self.place_societe = np.random.random(self.taille_place_societe)
 
 
     def set_representatif_de_la_realite():

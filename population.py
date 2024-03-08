@@ -3,8 +3,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import candidat
 
-coef_pos = 1.05
-coef_neg = 1.1
+coef_pos = 1.05 #à quel point une interaction positive te fais changer d'avis
+coef_neg = 1.1 #à quel point une interaction négative te fais changer d'avis
+c_opinion = 1 #à quel point des différences d'opinion produisent des interactions négatives
+c_place = 1 #à quel point des différences de place dans la société produisent des interactions négatives
+c_place_choix_interactions = 1 #à quel point être distant socialement t'empèche d'interagir
 
 
 class Population:
@@ -18,25 +21,25 @@ class Population:
         self.ecart_type_sociabilisation = ecart_type_sociabilisation
 
         self.taille_opinion = 0
-        self.taille_statut_social = 0
+        self.taille_place_societe = 0
         
         self.abstention_factor = 0.2
 
-    def initialisation_aleatoire_population(self, taille_population:int, taille_opinion:int, taille_statut_social:int, type_population:str = "completement_aleatoire"):
+    def initialisation_aleatoire_population(self, taille_population:int, taille_opinion:int, taille_place_societe:int, type_population:str = "completement_aleatoire"):
 
         self.taille_opinion = taille_opinion
-        self.taille_statut_social = taille_statut_social
+        self.taille_place_societe = taille_place_societe
 
         if len(self.individus) != 0:
             raise ValueError("Initialisation aléatoire sur une population non vide")
         
         if type_population == "completement_aleatoire":
             for _ in range(taille_population):
-                i = individu.Individu(taille_opinion, taille_statut_social)
+                i = individu.Individu(taille_opinion, taille_place_societe)
                 i.set_completement_aleatoire(self.ecart_type_influence, self.ecart_type_sociabilisation)
                 self.individus.append(i)
         elif type_population == "representatif_de_la_realite":
-                i = individu.Individu(taille_opinion, taille_statut_social)
+                i = individu.Individu(taille_opinion, taille_place_societe)
                 i.set_representatif_de_la_realite(self.ecart_type_influence, self.ecart_type_sociabilisation)
                 self.individus.append(i)
         else:
@@ -78,7 +81,8 @@ class Population:
     def etape_temporelle(self):
         for a in self.individus:
             for _ in range(a.sociabilisation):
-                interaction(a,np.random.choice(self.individus))
+                p = [np.exp(-c_place_choix_interactions*np.linalg.norm(a.place_societe - i.place_societe)) for i in self.individus]
+                interaction(a,np.random.choice(self.individus, p = p/np.sum(p)))
         
     def evolution(self,n):
         for _ in range(n):
@@ -128,8 +132,6 @@ class Population:
         plt.show()
         plt.cla()
 
-        
-    
     ## différents types d'élections possible
     def election_type_1(self): # candidat le plus proche en ecart quadratique
         def eq(indiv, candi):
@@ -156,7 +158,7 @@ class Population:
         pass
 
 def interaction(a,b):
-    u = np.random.binomial(1, np.exp((-1) * np.linalg.norm(a.opinion - b.opinion)))
+    u = np.random.binomial(1, np.exp( -c_opinion*np.linalg.norm(a.opinion - b.opinion) - c_place*np.linalg.norm(a.place_societe - b.place_societe)))
     m = (a.influence*a.opinion + b.influence*b.opinion)/(a.influence + b.influence)
     if u:
         a.opinion += coef_pos*(m - a.opinion) # se rapproche du barycentre
