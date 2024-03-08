@@ -1,7 +1,7 @@
 import individu
 import numpy as np
 import matplotlib.pyplot as plt
-
+import candidat
 
 coef_pos = 1.05
 coef_neg = 1.1
@@ -37,11 +37,37 @@ class Population:
             raise ValueError("le type de population utilisé n'est pas valide")
 
     ## différents modèles représentants l'arrivée des candidats en politique
-    def placement_candidats_type_1():
-        pass
-    
-    def placement_candidats_type_1():
-        pass
+    def selectionne_candidat(self, nombre_candidat:int):
+        if len(nombre_candidat) != 0:
+            raise ValueError("Erreur car la liste de candidats est non vide")
+        
+        for _ in range(nombre_candidat):
+            s = candidat.Candidat(self.taille_opinion)
+            self.candidats.append(s)
+
+    def placement_strategique_candidats(self, deplacement_moral_max:float, echantillon_type_election, nombre_iteration:int = 10):
+
+        for k in nombre_iteration:
+            pas = 1/(k+4)
+            for ind, s in enumerate(self.candidats):
+                nombre_vote = echantillon_type_election(self)[ind]
+                for j in range(self.taille_opinion):
+
+                    pas_plus = min(pas, s.ideaux_initiaux + deplacement_moral_max - s.ideaux_modifies) # s.ideaux_modifies ne doit pas dépasser s.ideaux_initiaux + deplacement_moral_max
+                    pas_moins = max(-pas, s.ideaux_initiaux - deplacement_moral_max - s.ideaux_modifies)
+                    s.ideaux_modifies[j] += pas_plus
+                    nombre_vote_plus = echantillon_type_election(self)[ind]
+                    s.ideaux_modifies[j] = s.ideaux_modifies[j] - pas_plus + pas_moins
+                    nombre_vote_moins = echantillon_type_election(self)[ind]
+                    s.ideaux_modifies[j] += pas_moins
+
+                    if nombre_vote_plus > nombre_vote_moins:
+                        if nombre_vote_plus > nombre_vote:
+                            s.ideaux_modifies[j] += pas
+                    else:
+                        if nombre_vote_moins > nombre_vote:
+                            s.ideaux_modifies[j] -= pas
+                
 
 
     def etape_temporelle(self):
