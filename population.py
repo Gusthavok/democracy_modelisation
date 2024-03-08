@@ -9,17 +9,15 @@ coef_neg = 1.1
 
 class Population:
 
-    def __init__(self) -> None:
+    def __init__(self, ecart_type_influence = 1, ecart_type_sociabilisation= 1) -> None:
         self.individus = [] # liste d'individus
         self.candidats = [] # liste des candidats
         # parametre liés au type de société qu'on représente : beaucoup ou pas beaucoup d'intéraction, société très polarisée ou pas trop...
         
-        self.ecart_type_influence = 1
-        self.ecart_type_sociabilisation = 1
+        self.ecart_type_influence = ecart_type_influence
+        self.ecart_type_sociabilisation = ecart_type_sociabilisation
 
     def initialisation_aleatoire_population(self, taille_population:int, taille_opinion:int, taille_statut_social:int, type_population:int = "completement_aleatoire"):
-
-        self.taille_opinion = taille_opinion
 
         if len(self.individus) != 0:
             raise ValueError("Initialisation aléatoire sur une population non vide")
@@ -55,6 +53,7 @@ class Population:
 
                     pas_plus = min(pas, s.ideaux_initiaux + deplacement_moral_max - s.ideaux_modifies) # s.ideaux_modifies ne doit pas dépasser s.ideaux_initiaux + deplacement_moral_max
                     pas_moins = max(-pas, s.ideaux_initiaux - deplacement_moral_max - s.ideaux_modifies)
+
                     s.ideaux_modifies[j] += pas_plus
                     nombre_vote_plus = echantillon_type_election(self)[ind]
                     s.ideaux_modifies[j] = s.ideaux_modifies[j] - pas_plus + pas_moins
@@ -67,9 +66,7 @@ class Population:
                     else:
                         if nombre_vote_moins > nombre_vote:
                             s.ideaux_modifies[j] -= pas
-                
-
-
+    
     def etape_temporelle(self):
         for a in self.individus:
             for i in range(a.sociabilisation):
