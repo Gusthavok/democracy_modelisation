@@ -17,7 +17,15 @@ class Population:
         self.ecart_type_influence = ecart_type_influence
         self.ecart_type_sociabilisation = ecart_type_sociabilisation
 
-    def initialisation_aleatoire_population(self, taille_population:int, taille_opinion:int, taille_statut_social:int, type_population:int = "completement_aleatoire"):
+        self.taille_opinion = 0
+        self.taille_statut_social = 0
+        
+        self.abstention_factor = 0.2
+
+    def initialisation_aleatoire_population(self, taille_population:int, taille_opinion:int, taille_statut_social:int, type_population:str = "completement_aleatoire"):
+
+        self.taille_opinion = taille_opinion
+        self.taille_statut_social = taille_statut_social
 
         if len(self.individus) != 0:
             raise ValueError("Initialisation aléatoire sur une population non vide")
@@ -35,8 +43,8 @@ class Population:
             raise ValueError("le type de population utilisé n'est pas valide")
 
     ## différents modèles représentants l'arrivée des candidats en politique
-    def selectionne_candidat(self, nombre_candidat:int):
-        if len(nombre_candidat) != 0:
+    def initialisation_aleatoire_candidats(self, nombre_candidat:int):
+        if len(self.candidats) != 0:
             raise ValueError("Erreur car la liste de candidats est non vide")
         
         for _ in range(nombre_candidat):
@@ -45,61 +53,116 @@ class Population:
 
     def placement_strategique_candidats(self, deplacement_moral_max:float, echantillon_type_election, nombre_iteration:int = 10):
 
-        for k in nombre_iteration:
+        for k in range(nombre_iteration):
             pas = 1/(k+4)
             for ind, s in enumerate(self.candidats):
                 nombre_vote = echantillon_type_election(self)[ind]
                 for j in range(self.taille_opinion):
 
-                    pas_plus = min(pas, s.ideaux_initiaux + deplacement_moral_max - s.ideaux_modifies) # s.ideaux_modifies ne doit pas dépasser s.ideaux_initiaux + deplacement_moral_max
-                    pas_moins = max(-pas, s.ideaux_initiaux - deplacement_moral_max - s.ideaux_modifies)
+                    pas_plus = min(pas, s.ideaux_initiaux[j] + deplacement_moral_max - s.programme_publique[j]) # s.programme_publique ne doit pas dépasser s.ideaux_initiaux + deplacement_moral_max
+                    pas_moins = max(-pas, s.ideaux_initiaux[j] - deplacement_moral_max - s.programme_publique[j])
 
-                    s.ideaux_modifies[j] += pas_plus
+                    s.programme_publique[j] += pas_plus
                     nombre_vote_plus = echantillon_type_election(self)[ind]
-                    s.ideaux_modifies[j] = s.ideaux_modifies[j] - pas_plus + pas_moins
+                    s.programme_publique[j] = s.programme_publique[j] - pas_plus + pas_moins
                     nombre_vote_moins = echantillon_type_election(self)[ind]
-                    s.ideaux_modifies[j] += pas_moins
+                    s.programme_publique[j] -= pas_moins
 
                     if nombre_vote_plus > nombre_vote_moins:
                         if nombre_vote_plus > nombre_vote:
-                            s.ideaux_modifies[j] += pas
+                            s.programme_publique[j] += pas_plus
                     else:
                         if nombre_vote_moins > nombre_vote:
-                            s.ideaux_modifies[j] -= pas
+                            s.programme_publique[j] += pas_moins
     
     def etape_temporelle(self):
         for a in self.individus:
-            for i in range(a.sociabilisation):
+            for _ in range(a.sociabilisation):
                 interaction(a,np.random.choice(self.individus))
         
     def evolution(self,n):
-        for i in range(n):
-            self.etape_temporelle
+        for _ in range(n):
+            self.etape_temporelle()
     
-    def affiche(self):
+    def affiche_1(self, nom_fichier = ""):
         if self.taille_opinion > 2:
             raise ValueError("impossible de plot en dimension > 2")
-        plt.scatter([a.opinion[0] for a in self.individus],[a.opinion[1] for a in self.individus])
+        plt.scatter([a.opinion[0] for a in self.individus],[a.opinion[1] for a in self.individus], c = "blue")
+        plt.scatter([s.programme_publique[0] for s in self.candidats],[s.programme_publique[1] for s in self.candidats], c = "red")
+        if nom_fichier != "":
+            plt.savefig(nom_fichier+'.png')
+        else:
+            plt.show()
+        plt.cla()
+
+    
+    def affiche_2(self, couleurs_individus, couleurs_candidats):
+        if self.taille_opinion > 2:
+            raise ValueError("impossible de plot en dimension > 2")
+        
+        def eq(indiv, candi):
+            som = 0
+            for indice in range(self.taille_opinion):
+                som += (indiv.opinion[indice]-candi.programme_publique[indice])**2
+            return som
+        
+        if len(self.candidats) == 0:
+            raise ValueError("Impossible de réaliser une élection sans candidats")
+        
+        votants = [[] for _ in self.candidats]
+        abstentionistes = []
+
+        for indiv in self.individus:
+            score = [eq(indiv, candi) for candi in self.candidats]
+            u = np.array(score).argmin()
+            if score[u]/self.taille_opinion< self.abstention_factor**2:
+                votants[u].append(indiv)   
+            else:
+                abstentionistes.append(indiv)
+        
+        plt.scatter([a.opinion[0] for a in abstentionistes],[a.opinion[1] for a in abstentionistes], c = 'gray')
+        for ind in range(len(self.candidats)):
+            plt.scatter([a.opinion[0] for a in votants[ind]],[a.opinion[1] for a in votants[ind]], c = couleurs_individus[ind])
+            plt.scatter([self.candidats[ind].programme_publique[0]],[self.candidats[ind].programme_publique[1]], c = couleurs_candidats[ind])
+        
         plt.show()
+        plt.cla()
+
+        
     
     ## différents types d'élections possible
-    def election_type_1(self):
+    def election_type_1(self): # candidat le plus proche en ecart quadratique
+        def eq(indiv, candi):
+            som = 0
+            for indice in range(self.taille_opinion):
+                som += (indiv.opinion[indice]-candi.programme_publique[indice])**2
+            return som
+        
         if len(self.candidats) == 0:
-            raise ValueError("Impossible de réaliser une élection avec aucun candidats")
-        pass
+            raise ValueError("Impossible de réaliser une élection sans candidats")
+        
+        nombre_de_voix = [0 for _ in self.candidats]
+        for indiv in self.individus:
+            score = [eq(indiv, candi) for candi in self.candidats]
+            u = np.array(score).argmin()
+            if score[u]/self.taille_opinion < self.abstention_factor**2: # On compare l'ecart quadratique moyen du programme politique avec l'opinion du PAX
+                nombre_de_voix[np.array(score).argmin()]+=1        
+        
+        return nombre_de_voix
 
     def election_type_2(self):
         if len(self.candidats) == 0:
-            raise ValueError("Impossible de réaliser une élection avec aucun candidats")
+            raise ValueError("Impossible de réaliser une élection sans candidats")
         pass
 
 def interaction(a,b):
-    u = np.random.binomial(1, np.exp((-2) * np.linalg.norm(a.opinion - b.opinion)))
+    u = np.random.binomial(1, np.exp((-1) * np.linalg.norm(a.opinion - b.opinion)))
+    m = (a.influence*a.opinion + b.influence*b.opinion)/(a.influence + b.influence)
     if u:
-        m = (a.influence*a.opinion + b.influence*b.opinion)/(a.influence + b.influence)
-        a.opinion = a.opinion + coef_pos*(m - a.opinion)
-        b.opinion = b.opinion + coef_pos*(m - b.opinion)
+        a.opinion += coef_pos*(m - a.opinion) # se rapproche du barycentre
+        b.opinion += coef_pos*(m - b.opinion)
     else:
-        a.opinion = a.opinion*(1-coef_neg)
-        b.opinion = 1 - (1 - b.opinion)*(1-coef_neg)    
+        a.opinion = np.array([min(1.0, max(0.0, a.opinion[ind] - coef_neg*(m[ind] - a.opinion[ind]))) for ind in range(len(a.opinion))]) # s'écarte par rapport au barycentre
+        b.opinion = np.array([min(1.0, max(0.0, b.opinion[ind] - coef_neg*(m[ind] - b.opinion[ind]))) for ind in range(len(b.opinion))])
+        
     
