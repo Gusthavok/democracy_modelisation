@@ -6,8 +6,8 @@ pops.initialisation_aleatoire_population(1000, 2, 1)
 pops.affiche_1(nom_fichier = "imgs/fichier_de_base")
 
 
-for ind in range(60):
-    pops.evolution(5)
+for ind in range(20):
+    pops.evolution(20)
     pops.affiche_1(nom_fichier = "imgs/fichier_"+str(ind))
 
 pops.initialisation_aleatoire_candidats(6)

@@ -1,5 +1,7 @@
 import numpy as np
 
+opinion_bornee = False
+
 class Individu:
     def __init__(self, taille_opinion:int, taille_place_societe:int) -> None:
         self.taille_opinion = taille_opinion
@@ -15,8 +17,10 @@ class Individu:
         # représentation très naive de la répartition des compétences et des avis en fonction du background social (tout est indépendants)
         self.influence = np.random.exponential(1/ecart_type_influence)
         self.sociabilisation = round(1+ np.random.exponential(1/ecart_type_sociabilisation))
-
-        self.opinion = np.random.random(self.taille_opinion)
+        if opinion_bornee:
+            self.opinion = np.random.random(self.taille_opinion)
+        else :
+            self.opinion = np.random.normal(0,1,self.taille_opinion)
         self.place_societe = np.random.random(self.taille_place_societe)
 
 

@@ -4,10 +4,12 @@ import matplotlib.pyplot as plt
 import candidat
 
 coef_pos = 1.05 #à quel point une interaction positive te fais changer d'avis
-coef_neg = 1.1 #à quel point une interaction négative te fais changer d'avis
-c_opinion = 0.1 #à quel point des différences d'opinion produisent des interactions négatives
-c_place = 2 #à quel point des différences de place dans la société produisent des interactions négatives
-c_place_choix_interactions = 1 #à quel point être distant socialement t'empèche d'interagir
+coef_neg = 1.00001 #à quel point une interaction négative te fais changer d'avis
+c_opinion = 0.01 #à quel point des différences d'opinion produisent des interactions négatives
+c_place = 1.5 #à quel point des différences de place dans la société produisent des interactions négatives
+c_place_choix_interactions = 0 #à quel point être distant socialement t'empèche d'interagir
+
+opinion_bornee = individu.opinion_bornee
 
 nb_neg = 0
 nb_pos = 0
@@ -198,8 +200,9 @@ def interaction(a,b):
         #b.opinion = np.array([min(1.0, max(0.0, b.opinion[ind] - coef_neg*(m[ind] - b.opinion[ind]))) for ind in range(len(b.opinion))])
         a.opinion -= coef_neg*(m - a.opinion) # s'eloigne du barycentre
         b.opinion -= coef_neg*(m - b.opinion)
-        a.opinion = np.clip(a.opinion, 0, 1)
-        b.opinion = np.clip(b.opinion, 0, 1)
+        if opinion_bornee:
+            a.opinion = np.clip(a.opinion, 0, 1)
+            b.opinion = np.clip(b.opinion, 0, 1)
         nb_neg += 1
         
     
