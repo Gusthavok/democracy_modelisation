@@ -39,3 +39,7 @@ class Individu:
     
     def approuve(self, c):
         return np.linalg.norm(c - self.opinion)/np.sqrt(self.taille_opinion) < self.abstension_factor 
+    
+    def trie(self, lc):
+        d = np.linalg.norm(lc - self.opinion, axis = 1)
+        return np.argsort(d)

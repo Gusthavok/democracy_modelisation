@@ -238,6 +238,14 @@ class Population:
             if possible:
                 return c1
         return None
+    
+    def election_borda(self, n):
+        pts = np.zeros(len(self.candidats))
+        for i in self.individus:
+            tri = i.trie(self.candidats)
+            for k in range(n):
+                pts[tri[k]] += n-k
+        return self.candidats[np.argmax(pts)]
 
 def interaction(a,b):
     global nb_neg, nb_pos
