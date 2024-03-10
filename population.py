@@ -3,9 +3,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import candidat
 
-coef_pos = 1.05 #à quel point une interaction positive te fais changer d'avis
-coef_neg = 1.00001 #à quel point une interaction négative te fais changer d'avis
-c_opinion = 0.01 #à quel point des différences d'opinion produisent des interactions négatives
+coef_pos = 0.05 #à quel point une interaction positive te fais changer d'avis
+coef_neg = 0.1 #à quel point une interaction négative te fais changer d'avis
+c_opinion = 0 #à quel point des différences d'opinion produisent des interactions négatives
 c_place = 1.5 #à quel point des différences de place dans la société produisent des interactions négatives
 c_place_choix_interactions = 0 #à quel point être distant socialement t'empèche d'interagir
 
