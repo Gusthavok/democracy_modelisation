@@ -1,6 +1,6 @@
 import numpy as np
 
-opinion_bornee = False
+opinion_bornee = True
 
 class Individu:
     def __init__(self, taille_opinion:int, taille_place_societe:int) -> None:

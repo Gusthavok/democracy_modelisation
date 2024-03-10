@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import candidat
 
-coef_pos = 0.05 #à quel point une interaction positive te fais changer d'avis
+coef_pos = 0.1 #à quel point une interaction positive te fais changer d'avis
 coef_neg = 0.1 #à quel point une interaction négative te fais changer d'avis
 c_opinion = 0 #à quel point des différences d'opinion produisent des interactions négatives
 c_place = 1.5 #à quel point des différences de place dans la société produisent des interactions négatives
@@ -114,7 +114,9 @@ class Population:
             plt.savefig(nom_fichier+'.png')
         else:
             plt.show()
+        ax.cla()
         plt.cla()
+        plt.close("all")
 
     
     def affiche_2(self, couleurs_individus, couleurs_candidats):
@@ -155,7 +157,9 @@ class Population:
             ax.scatter(*pts, c = couleurs_candidats[ind])
         
         plt.show()
+        ax.cla()
         plt.cla()
+        plt.close("all")
 
     ## différents types d'élections possible
     def election_type_1(self): # candidat le plus proche en ecart quadratique
