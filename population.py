@@ -173,7 +173,7 @@ class Population:
             score = [eq(indiv, candi) for candi in self.candidats]
             u = np.array(score).argmin()
             if score[u]/self.taille_opinion < self.abstention_factor**2: # On compare l'ecart quadratique moyen du programme politique avec l'opinion du PAX
-                nombre_de_voix[np.array(score).argmin()]+=1        
+                nombre_de_voix[np.array(score).argmin()]+=1
         
         return nombre_de_voix
 
