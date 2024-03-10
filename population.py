@@ -225,6 +225,19 @@ class Population:
             votes[i.choose(passants)] += 1
         return passants[np.argmax(votes)]
         
+    def condorcet(self):
+        for c1 in self.candidats:
+            possible = True
+            for c2 in self.candidats:
+                v = [0,0]
+                for i in self.individus:
+                    votant, choix = i.choose([c1,c2])
+                    if votant:
+                        v[choix] += 1
+                possible = possible and v[0] >= v[1]
+            if possible:
+                return c1
+        return None
 
 def interaction(a,b):
     global nb_neg, nb_pos
