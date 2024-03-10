@@ -191,6 +191,41 @@ class Population:
         ax.scatter([a.opinion[0] for a in self.individus], [a.opinion[1] for a in self.individus], [a.place_societe[0] for a in self.individus])
         plt.show()
 
+    def election_2tours(self):
+        votes = np.zeros(len(self.candidats))
+        for i in self.individus:
+            votant, choix = i.vote(self.candidats)
+            if votant:
+                votes[choix] += 1
+        passants = self.candidats[np.argsort(votes)[-2:]]
+        votes = np.zeros(len(passants))
+        for i in self.individus:
+            votes[i.choose(passants)] += 1
+        return passants[np.argmax(votes)]
+
+    def election_approbation(self):
+        votes = np.zeros(len(self.candidats))
+        for ind in self.individus:
+            for i in range(len(self.candidats)):
+                if ind.approuve(self.candidats[i]):
+                    votes[i] += 1
+        return self.candidats[np.argmax(votes)]
+    
+    def election_geneK(self, limite2ndtour = 0.1):
+        votes = np.zeros(len(self.candidats))
+        nb_votants = 0
+        for i in self.individus:
+            votant, choix = i.vote(self.candidats)
+            if votant:
+                nb_votants += 1
+                votes[choix] += 1
+        passants = self.candidats[np.where(votes > limite2ndtour*nb_votants)]
+        votes = np.zeros(len(passants))
+        for i in self.individus:
+            votes[i.choose(passants)] += 1
+        return passants[np.argmax(votes)]
+        
+
 def interaction(a,b):
     global nb_neg, nb_pos
     u = np.random.binomial(1, np.exp( -c_opinion*np.linalg.norm(a.opinion - b.opinion) - c_place*np.linalg.norm(a.place_societe - b.place_societe)))

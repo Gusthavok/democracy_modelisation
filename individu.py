@@ -3,7 +3,7 @@ import numpy as np
 opinion_bornee = True
 
 class Individu:
-    def __init__(self, taille_opinion:int, taille_place_societe:int) -> None:
+    def __init__(self, taille_opinion:int, taille_place_societe:int, abstension_factor = 0.2) -> None:
         self.taille_opinion = taille_opinion
         self.taille_place_societe = taille_place_societe
 
@@ -12,6 +12,8 @@ class Individu:
 
         self.influence = 1
         self.sociabilisation = 1
+
+        self.abstension_factor = abstension_factor
 
     def set_completement_aleatoire(self, ecart_type_influence, ecart_type_sociabilisation):
         # représentation très naive de la répartition des compétences et des avis en fonction du background social (tout est indépendants)
@@ -29,4 +31,11 @@ class Individu:
         # Et des liens entre l'influence et ce background
         # et des liens initiaux entre ce background et leurs opinions initiales (avant toute sociabilisation)
         pass
+
+    def vote(self, lc):
+        d = np.linalg.norm(lc - self.opinion, axis = 1)
+        c = np.argmin(d)
+        return d[c]/np.sqrt(self.taille_opinion) < self.abstention_factor, c #pas de vote utile dans ce modèle
     
+    def approuve(self, c):
+        return np.linalg.norm(c - self.opinion)/np.sqrt(self.taille_opinion) < self.abstension_factor 
