@@ -1,9 +1,9 @@
 import numpy as np
 
-opinion_bornee = True
+opinion_bornee = False
 
 class Individu:
-    def __init__(self, taille_opinion:int, taille_place_societe:int, abstension_factor = 0.2) -> None:
+    def __init__(self, taille_opinion:int, taille_place_societe:int, abstension_factor = 0.5) -> None:
         self.taille_opinion = taille_opinion
         self.taille_place_societe = taille_place_societe
 
@@ -34,14 +34,16 @@ class Individu:
 
     def vote(self, lc):
         charismes = [c.charisme for c in lc]
-        d = np.linalg.norm(lc - self.opinion, axis = 1)/charismes
+        programmes = np.array([c.programme_publique for c in lc])
+        d = np.linalg.norm(programmes - self.opinion, axis = 1)/charismes
         c = np.argmin(d)
-        return d[c]/np.sqrt(self.taille_opinion) < self.abstention_factor, c #pas de vote utile dans ce modèle
+        return d[c]/np.sqrt(self.taille_opinion) < self.abstension_factor, c #pas de vote utile dans ce modèle
     
     def approuve(self, c):
-        return np.linalg.norm(c - self.opinion)/(np.sqrt(self.taille_opinion) * c.charisme) < self.abstension_factor 
+        return np.linalg.norm(c.programme_publique - self.opinion)/(np.sqrt(self.taille_opinion) * c.charisme) < self.abstension_factor 
     
     def trie(self, lc):
-        charismes = [c.charisme for c in lc]
-        d = np.linalg.norm(lc - self.opinion, axis = 1)/charismes
+        charismes = np.array([c.charisme for c in lc])
+        programmes = np.array([c.programme_publique for c in lc])
+        d = np.linalg.norm(programmes - self.opinion, axis = 1)/charismes
         return np.argsort(d)

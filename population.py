@@ -27,10 +27,12 @@ class Population:
         self.taille_opinion = 0
         self.taille_place_societe = 0
         
-        self.abstention_factor = 0.2
+        self.abstention_factor = 1
 
         self.nb_neg = 0
         self.nb_pos = 0
+
+        self.elections = [self.election_2tours, self.election_approbation, self.election_geneK, self.condorcet, self.election_borda]
 
     def initialisation_aleatoire_population(self, taille_population:int, taille_opinion:int, taille_place_societe:int, type_population:str = "completement_aleatoire"):
 
@@ -60,6 +62,7 @@ class Population:
         for _ in range(nombre_candidat):
             s = candidat.Candidat(self.taille_opinion)
             self.candidats.append(s)
+        self.candidats = np.array(self.candidats)
 
     def placement_strategique_candidats(self, deplacement_moral_max:float, echantillon_type_election, nombre_iteration:int = 10):
 
@@ -141,7 +144,7 @@ class Population:
         for indiv in self.individus:
             score = [eq(indiv, candi) for candi in self.candidats]
             u = np.array(score).argmin()
-            if score[u]/self.taille_opinion< self.abstention_factor**2:
+            if score[u]/self.taille_opinion < self.abstention_factor**2:
                 votants[u].append(indiv)   
             else:
                 abstentionistes.append(indiv)
@@ -152,7 +155,7 @@ class Population:
         for ind in range(len(self.candidats)):
             pts = [[a.opinion[i] for a in votants[ind]] for i in range(self.taille_opinion)]
             ax.scatter(*pts, c = couleurs_individus[ind])
-            pts = [[self.candidats[i].programme_publique[0]] for i in range(self.taille_opinion)]
+            pts = [[self.candidats[ind].programme_publique[i]] for i in range(self.taille_opinion)]
             ax.scatter(*pts, c = couleurs_candidats[ind])
         
         plt.show()
@@ -196,10 +199,13 @@ class Population:
             votant, choix = i.vote(self.candidats)
             if votant:
                 votes[choix] += 1
-        passants = self.candidats[np.argsort(votes)[-2:]]
+        s = np.argsort(votes)
+        passants = self.candidats[s]
         votes = np.zeros(len(passants))
         for i in self.individus:
-            votes[i.choose(passants)] += 1
+            votant, choix = i.vote(passants)
+            if votant:
+                votes[choix] += 1
         return passants[np.argmax(votes)]
 
     def election_approbation(self):
@@ -221,7 +227,9 @@ class Population:
         passants = self.candidats[np.where(votes > limite2ndtour*nb_votants)]
         votes = np.zeros(len(passants))
         for i in self.individus:
-            votes[i.choose(passants)] += 1
+            votant, choix = i.vote(passants)
+            if votant:
+                votes[choix] += 1
         return passants[np.argmax(votes)]
         
     def condorcet(self):
@@ -230,7 +238,7 @@ class Population:
             for c2 in self.candidats:
                 v = [0,0]
                 for i in self.individus:
-                    votant, choix = i.choose([c1,c2])
+                    votant, choix = i.vote([c1,c2])
                     if votant:
                         v[choix] += 1
                 possible = possible and v[0] >= v[1]
@@ -238,7 +246,9 @@ class Population:
                 return c1
         return None
     
-    def election_borda(self, n):
+    def election_borda(self, n = None):
+        if n == None:
+            n = len(self.candidats)
         pts = np.zeros(len(self.candidats))
         for i in self.individus:
             tri = i.trie(self.candidats)
@@ -263,5 +273,3 @@ def interaction(a,b):
             a.opinion = np.clip(a.opinion, 0, 1)
             b.opinion = np.clip(b.opinion, 0, 1)
         nb_neg += 1
-        
-    
