@@ -118,7 +118,6 @@ class Population:
         plt.cla()
         plt.close("all")
 
-    
     def affiche_2(self, couleurs_individus, couleurs_candidats):
         if self.taille_opinion > 3:
             raise ValueError("impossible de plot en dimension > 3")

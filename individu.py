@@ -33,13 +33,15 @@ class Individu:
         pass
 
     def vote(self, lc):
-        d = np.linalg.norm(lc - self.opinion, axis = 1)
+        charismes = [c.charisme for c in lc]
+        d = np.linalg.norm(lc - self.opinion, axis = 1)/charismes
         c = np.argmin(d)
         return d[c]/np.sqrt(self.taille_opinion) < self.abstention_factor, c #pas de vote utile dans ce modèle
     
     def approuve(self, c):
-        return np.linalg.norm(c - self.opinion)/np.sqrt(self.taille_opinion) < self.abstension_factor 
+        return np.linalg.norm(c - self.opinion)/(np.sqrt(self.taille_opinion) * c.charisme) < self.abstension_factor 
     
     def trie(self, lc):
-        d = np.linalg.norm(lc - self.opinion, axis = 1)
+        charismes = [c.charisme for c in lc]
+        d = np.linalg.norm(lc - self.opinion, axis = 1)/charismes
         return np.argsort(d)
