@@ -8,6 +8,8 @@ coef_neg = 0.1 #à quel point une interaction négative te fais changer d'avis
 c_opinion = 0 #à quel point des différences d'opinion produisent des interactions négatives
 c_place = 1.5 #à quel point des différences de place dans la société produisent des interactions négatives
 c_place_choix_interactions = 0 #à quel point être distant socialement t'empèche d'interagir
+l = 2#norme l vis a vis des opinions
+p = 2#norme p vis a vis de la pop
 
 opinion_bornee = individu.opinion_bornee
 
@@ -255,6 +257,17 @@ class Population:
             for k in range(n):
                 pts[tri[k]] += n-k
         return self.candidats[np.argmax(pts)]
+    
+    def mesure(self, opinion):
+        global l, p
+        som = 0
+        for i in self.individus:
+            saum = 0
+            for k in range (self.taille_opinion):
+                saum += np.abs(opinion[k] - i.opinion[k])**l
+            som += saum**(p/l)
+        return (som/len(self.individus))**(1/p)
+
 
 def interaction(a,b):
     global nb_neg, nb_pos
