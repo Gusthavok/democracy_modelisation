@@ -2,8 +2,7 @@ import numpy as np
 import parametres
 
 c_place_choix_interactions = parametres.c_place_choix_interactions
-
-opinion_bornee = True
+opinion_bornee = parametres.opinion_bornee
 
 class Individu:
     def __init__(self, taille_opinion:int, taille_place_societe:int, abstension_factor = 0.5) -> None:
