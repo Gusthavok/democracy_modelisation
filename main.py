@@ -2,15 +2,16 @@ import population
 import parametres
 
 type_interactions = parametres.type_interactions
+taille_opinion = parametres.taille_opinion
 
 pops = population.Population()
 
-pops.initialisation_aleatoire_population(1000, 2, 1, type_interactions=type_interactions)
+pops.initialisation_aleatoire_population(1000, taille_opinion, 1, type_interactions=type_interactions)
 pops.affiche_1(nom_fichier = "imgs/fichier_de_base")
 
 
 for ind in range(20):
-    pops.evolution(10, type_interaction=type_interactions)
+    pops.evolution(10, taille_opinion, type_interaction=type_interactions)
     pops.affiche_1(nom_fichier = "imgs/fichier_"+str(ind))
 
 pops.initialisation_aleatoire_candidats(6)

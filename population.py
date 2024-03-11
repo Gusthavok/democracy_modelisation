@@ -94,34 +94,42 @@ class Population:
                         if nombre_vote_moins > nombre_vote:
                             s.programme_publique[j] += pas_moins
     
-    def etape_temporelle(self):
+    def etape_temporelle(self, taille_opinion):
         for a in range(len(self.individus)):
             for _ in range(len(self.individus[a].sociabilisation)):
                 b = np.random.choice(len(self.individus))
                 if np.random.binomial(1, self.proba_interactions[a][b]):
                     interaction(self.individus[a],self.individus[b])
+        self.normalisation()
+        self.lobotomisation(taille_opinion)
     
-    def etape_temporelle_graph(self):
+    def etape_temporelle_graph(self, taille_opinion):
         for a in self.individus:
             for b in a.sociabilisation:
                 interaction(a, self.individus[b])
         self.normalisation()
+        self.lobotomisation(taille_opinion)
 
     def normalisation(self):
         sigma = np.std([i.opinion for i in self.individus])
         for i in self.individus:
             i.opinion = i.opinion/sigma
+
+    def lobotomisation(self, taille_opinion):#aka fusillée sur la place plublique 
+        for i in self.individus:
+            if np.linalg.norm(i.opinion) > 5:
+                i.opinion = np.array([0.0 for j in range(taille_opinion)])
         
-    def evolution(self,n, type_interaction:str="initiale"):
+    def evolution(self,n, taille_opinion, type_interaction:str="initiale"):
         if type_interaction == "initiale":
             if not hasattr(self, 'proba_interactions'):
                 p = [[np.exp(-c_place_choix_interactions*np.linalg.norm(a.place_societe - b.place_societe)) for a in self.individus] for b in self.individus]
                 self.proba_interactions = p
             for _ in range(n):
-                self.etape_temporelle()
+                self.etape_temporelle(taille_opinion)
         elif type_interaction == "graph":
             for _ in range(n):
-                self.etape_temporelle_graph()
+                self.etape_temporelle_graph(taille_opinion)
     
     def affiche_1(self, nom_fichier = ""):
         if self.taille_opinion > 3:
