@@ -2,14 +2,15 @@ import individu
 import numpy as np
 import matplotlib.pyplot as plt
 import candidat
+import parametres as param
 
-coef_pos = 0.1 #à quel point une interaction positive te fais changer d'avis
-coef_neg = 0.1 #à quel point une interaction négative te fais changer d'avis
-c_opinion = 0 #à quel point des différences d'opinion produisent des interactions négatives
-c_place = 1.5 #à quel point des différences de place dans la société produisent des interactions négatives
-c_place_choix_interactions = 0 #à quel point être distant socialement t'empèche d'interagir
-l = 2#norme l vis a vis des opinions
-p = 2#norme p vis a vis de la pop
+coef_pos = param.coef_pos #à quel point une interaction positive te fais changer d'avis
+coef_neg = param.coef_neg #à quel point une interaction négative te fais changer d'avis
+c_opinion = param.c_opinion #à quel point des différences d'opinion produisent des interactions négatives
+c_place = param.c_place #à quel point des différences de place dans la société produisent des interactions négatives
+c_place_choix_interactions = param.c_place_choix_interactions #à quel point être distant socialement t'empèche d'interagir
+l = param.l#norme l vis a vis des opinions
+p = param.p#norme p vis a vis de la pop
 
 opinion_bornee = individu.opinion_bornee
 
@@ -36,7 +37,7 @@ class Population:
 
         self.elections = [self.election_2tours, self.election_approbation, self.election_geneK, self.condorcet, self.election_borda]
 
-    def initialisation_aleatoire_population(self, taille_population:int, taille_opinion:int, taille_place_societe:int, type_population:str = "completement_aleatoire"):
+    def initialisation_aleatoire_population(self, taille_population:int, taille_opinion:int, taille_place_societe:int, type_population:str = "completement_aleatoire", type_interactions = "initiale"):
 
         self.taille_opinion = taille_opinion
         self.taille_place_societe = taille_place_societe
@@ -49,6 +50,9 @@ class Population:
                 i = individu.Individu(taille_opinion, taille_place_societe)
                 i.set_completement_aleatoire(self.ecart_type_influence, self.ecart_type_sociabilisation)
                 self.individus.append(i)
+            if type_interactions == "graph":
+                for i in self.individus:
+                    i.set_completement_aleatoire_suite(self, taille_population)
         elif type_population == "representatif_de_la_realite":
                 i = individu.Individu(taille_opinion, taille_place_societe)
                 i.set_representatif_de_la_realite(self.ecart_type_influence, self.ecart_type_sociabilisation)
@@ -92,17 +96,26 @@ class Population:
     
     def etape_temporelle(self):
         for a in range(len(self.individus)):
-            for _ in range(self.individus[a].sociabilisation):
+            for _ in range(len(self.individus[a].sociabilisation)):
                 b = np.random.choice(len(self.individus))
                 if np.random.binomial(1, self.proba_interactions[a][b]):
                     interaction(self.individus[a],self.individus[b])
+    
+    def etape_temporelle_graph(self):
+        for a in self.individus:
+            for b in a.sociabilisation:
+                interaction(a, self.individus[b])
         
-    def evolution(self,n):
-        if not hasattr(self, 'proba_interactions'):
-            p = [[np.exp(-c_place_choix_interactions*np.linalg.norm(a.place_societe - b.place_societe)) for a in self.individus] for b in self.individus]
-            self.proba_interactions = p
-        for _ in range(n):
-            self.etape_temporelle()
+    def evolution(self,n, type_interaction:str="initiale"):
+        if type_interaction == "initiale":
+            if not hasattr(self, 'proba_interactions'):
+                p = [[np.exp(-c_place_choix_interactions*np.linalg.norm(a.place_societe - b.place_societe)) for a in self.individus] for b in self.individus]
+                self.proba_interactions = p
+            for _ in range(n):
+                self.etape_temporelle()
+        elif type_interaction == "graph":
+            for _ in range(n):
+                self.etape_temporelle_graph()
     
     def affiche_1(self, nom_fichier = ""):
         if self.taille_opinion > 3:

@@ -1,6 +1,9 @@
 import numpy as np
+import parametres
 
-opinion_bornee = False
+c_place_choix_interactions = parametres.c_place_choix_interactions
+
+opinion_bornee = True
 
 class Individu:
     def __init__(self, taille_opinion:int, taille_place_societe:int, abstension_factor = 0.5) -> None:
@@ -11,19 +14,29 @@ class Individu:
         self.place_societe = np.array([0 for j in range(taille_place_societe)])
 
         self.influence = 1
-        self.sociabilisation = 1
+        self.sociabilisation = [0]
 
         self.abstension_factor = abstension_factor
 
     def set_completement_aleatoire(self, ecart_type_influence, ecart_type_sociabilisation):
         # représentation très naive de la répartition des compétences et des avis en fonction du background social (tout est indépendants)
         self.influence = np.random.exponential(1/ecart_type_influence)
-        self.sociabilisation = round(1+ np.random.exponential(1/ecart_type_sociabilisation))
+        self.sociabilisation = [0 for _ in range (round(1+ np.random.exponential(1/ecart_type_sociabilisation)))]
         if opinion_bornee:
             self.opinion = np.random.random(self.taille_opinion)
         else :
             self.opinion = np.random.normal(0,1,self.taille_opinion)
         self.place_societe = np.random.random(self.taille_place_societe)
+
+    def set_completement_aleatoire_suite(self, population, taille_population):
+        for _ in range(len(self.sociabilisation)):
+            add = True
+            while add:
+                b = np.random.choice(taille_population)
+                if population.individus[b] != self and not(population.individus[b] in self.sociabilisation):
+                    if np.random.binomial(1, np.exp(-c_place_choix_interactions*np.linalg.norm(self.place_societe - population.individus[b].place_societe))):
+                        self.sociabilisation.append(b)
+                        add = False
 
 
     def set_representatif_de_la_realite():
