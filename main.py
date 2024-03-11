@@ -3,10 +3,12 @@ import parametres
 
 type_interactions = parametres.type_interactions
 taille_opinion = parametres.taille_opinion
+taille_population = parametres.taille_population
+taille_place_societe = parametres.taille_place_societe
 
 pops = population.Population()
 
-pops.initialisation_aleatoire_population(1000, taille_opinion, 1, type_interactions=type_interactions)
+pops.initialisation_aleatoire_population(taille_population, taille_opinion, taille_place_societe, type_interactions=type_interactions)
 pops.affiche_1(nom_fichier = "imgs/fichier_de_base")
 
 

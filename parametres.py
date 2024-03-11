@@ -1,3 +1,5 @@
+##paramètres modèle
+
 coef_pos = 0.1 #à quel point une interaction positive te fais changer d'avis
 coef_neg = 0.1 #à quel point une interaction négative te fais changer d'avis
 c_opinion = 0 #à quel point des différences d'opinion produisent des interactions négatives
@@ -10,4 +12,8 @@ type_interactions = "graph"
 
 opinion_bornee = False
 
+##paramètres simulation
+
 taille_opinion = 2
+taille_population = 1000
+taille_place_societe = 1
