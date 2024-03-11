@@ -10,7 +10,7 @@ pops.affiche_1(nom_fichier = "imgs/fichier_de_base")
 
 
 for ind in range(20):
-    pops.evolution(20, type_interaction=type_interactions)
+    pops.evolution(10, type_interaction=type_interactions)
     pops.affiche_1(nom_fichier = "imgs/fichier_"+str(ind))
 
 pops.initialisation_aleatoire_candidats(6)

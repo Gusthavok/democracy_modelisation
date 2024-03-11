@@ -8,4 +8,4 @@ p = 2#norme p vis a vis de la pop
 
 type_interactions = "graph"
 
-opinion_bornee = True
+opinion_bornee = False
