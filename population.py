@@ -69,16 +69,16 @@ class Population:
         for k in range(nombre_iteration):
             pas = 1/(k+4)
             for ind, s in enumerate(self.candidats):
-                nombre_vote = echantillon_type_election(self)[ind]
+                nombre_vote = echantillon_type_election()[ind]
                 for j in range(self.taille_opinion):
 
                     pas_plus = min(pas, s.ideaux_initiaux[j] + deplacement_moral_max - s.programme_publique[j]) # s.programme_publique ne doit pas dépasser s.ideaux_initiaux + deplacement_moral_max
                     pas_moins = max(-pas, s.ideaux_initiaux[j] - deplacement_moral_max - s.programme_publique[j])
 
                     s.programme_publique[j] += pas_plus
-                    nombre_vote_plus = echantillon_type_election(self)[ind]
+                    nombre_vote_plus = echantillon_type_election()[ind]
                     s.programme_publique[j] = s.programme_publique[j] - pas_plus + pas_moins
-                    nombre_vote_moins = echantillon_type_election(self)[ind]
+                    nombre_vote_moins = echantillon_type_election()[ind]
                     s.programme_publique[j] -= pas_moins
 
                     if nombre_vote_plus > nombre_vote_moins:
@@ -193,13 +193,21 @@ class Population:
         ax.scatter([a.opinion[0] for a in self.individus], [a.opinion[1] for a in self.individus], [a.place_societe[0] for a in self.individus])
         plt.show()
 
+    def pts_std(self):
+        votes = np.zeros(len(self.candidats))
+        for i in self.individus:
+            votant, choix = i.vote(self.candidats)
+            if votant:
+                votes[choix] += 1
+        return votes
+    
     def election_2tours(self):
         votes = np.zeros(len(self.candidats))
         for i in self.individus:
             votant, choix = i.vote(self.candidats)
             if votant:
                 votes[choix] += 1
-        s = np.argsort(votes)
+        s = np.argsort(self.pts_std())
         passants = self.candidats[s]
         votes = np.zeros(len(passants))
         for i in self.individus:
@@ -208,22 +216,20 @@ class Population:
                 votes[choix] += 1
         return passants[np.argmax(votes)]
 
-    def election_approbation(self):
+    def pts_approbation(self): 
         votes = np.zeros(len(self.candidats))
         for ind in self.individus:
             for i in range(len(self.candidats)):
                 if ind.approuve(self.candidats[i]):
                     votes[i] += 1
-        return self.candidats[np.argmax(votes)]
+        return votes
+
+    def election_approbation(self):
+        return self.candidats[np.argmax(self.pts_approbation())]
     
     def election_geneK(self, limite2ndtour = 0.1):
-        votes = np.zeros(len(self.candidats))
-        nb_votants = 0
-        for i in self.individus:
-            votant, choix = i.vote(self.candidats)
-            if votant:
-                nb_votants += 1
-                votes[choix] += 1
+        votes = self.pts_std()
+        nb_votants = np.sum(votes)
         passants = self.candidats[np.where(votes > limite2ndtour*nb_votants)]
         votes = np.zeros(len(passants))
         for i in self.individus:
@@ -246,7 +252,7 @@ class Population:
                 return c1
         return None
     
-    def election_borda(self, n = None):
+    def pts_borda(self, n = None):
         if n == None:
             n = len(self.candidats)
         pts = np.zeros(len(self.candidats))
@@ -254,7 +260,10 @@ class Population:
             tri = i.trie(self.candidats)
             for k in range(n):
                 pts[tri[k]] += n-k
-        return self.candidats[np.argmax(pts)]
+        return pts
+    
+    def election_borda(self, n = None):
+        return self.candidats[np.argmax(self.pts_borda(n))]
 
 def interaction(a,b):
     global nb_neg, nb_pos
