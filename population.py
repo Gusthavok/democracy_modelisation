@@ -108,8 +108,9 @@ class Population:
         for a in self.individus:
             for b in a.sociabilisation:
                 interaction(a, self.individus[b])
-        self.normalisation()
-        self.lobotomisation(taille_opinion)
+        if not(param.opinion_bornee):
+            self.normalisation()
+            self.lobotomisation(taille_opinion)
 
     def normalisation(self):
         sigma = np.std([i.opinion for i in self.individus])
