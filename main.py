@@ -22,7 +22,7 @@ pops.placement_strategique_candidats(1, pops.election_type_1, nombre_iteration=2
 couleurs_votants = ['blue', 'green', 'red', 'cyan', 'magenta', 'yellow']
 couleurs_candidats = ['black' for _ in range(6)]
 
-pops.affiche_2(couleurs_votants, couleurs_candidats)
+pops.affiche_1()
 pops.plot_opinion_statut()
 
 print('ratio pos/neg : ', population.nb_pos/population.nb_neg)

@@ -107,8 +107,9 @@ class Population:
         for a in self.individus:
             for b in a.sociabilisation:
                 interaction(a, self.individus[b])
-        self.normalisation()
-        self.lobotomisation(taille_opinion)
+        if not(param.opinion_bornee):
+            self.normalisation()
+            self.lobotomisation(taille_opinion)
 
     def normalisation(self):
         sigma = np.std([i.opinion for i in self.individus])
@@ -140,7 +141,7 @@ class Population:
             ax = plt.axes()
         pts = [[a.opinion[i] for a in self.individus] for i in range(self.taille_opinion)]
         ax.scatter(*pts, c = "blue")
-        pts = [[a.programme_public[i] for a in self.candidats] for i in range(self.taille_opinion)]
+        pts = [[a.programme_publique[i] for a in self.candidats] for i in range(self.taille_opinion)]
         ax.scatter(*pts, c = "red")
         if nom_fichier != "":
             plt.savefig(nom_fichier+'.png')
