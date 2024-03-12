@@ -4,10 +4,10 @@ pops = population.Population()
 
 pops.initialisation_aleatoire_population(1000, 2, 0, type_population="representatif_de_la_realite")
 
-pops.initialisation_aleatoire_candidats(10)
+pops.initialisation_aleatoire_candidats(5)
 
 couleurs_votants = ['blue', 'green', 'red', 'cyan', 'magenta', 'yellow']*5
-couleurs_candidats = ['black' for _ in range(10)]
+couleurs_candidats = ['black' for _ in range(5)]
 
 ##print(pops.condorcet().programme_publique)
 
