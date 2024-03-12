@@ -54,6 +54,7 @@ class Population:
                 for i in self.individus:
                     i.set_completement_aleatoire_suite(self, taille_population)
         elif type_population == "representatif_de_la_realite":
+            for _ in range(taille_population):
                 i = individu.Individu(taille_opinion, taille_place_societe)
                 i.set_representatif_de_la_realite(self.ecart_type_influence, self.ecart_type_sociabilisation)
                 self.individus.append(i)
@@ -73,7 +74,7 @@ class Population:
     def placement_strategique_candidats(self, deplacement_moral_max:float, echantillon_type_election, nombre_iteration:int = 10):
 
         for k in range(nombre_iteration):
-            pas = 1/(k+4)
+            pas = 1/(k+1)
             for ind, s in enumerate(self.candidats):
                 nombre_vote = echantillon_type_election()[ind]
                 for j in range(self.taille_opinion):
@@ -140,7 +141,7 @@ class Population:
             ax = plt.axes()
         pts = [[a.opinion[i] for a in self.individus] for i in range(self.taille_opinion)]
         ax.scatter(*pts, c = "blue")
-        pts = [[a.programme_public[i] for a in self.candidats] for i in range(self.taille_opinion)]
+        pts = [[a.programme_publique[i] for a in self.candidats] for i in range(self.taille_opinion)]
         ax.scatter(*pts, c = "red")
         if nom_fichier != "":
             plt.savefig(nom_fichier+'.png')
@@ -304,6 +305,37 @@ class Population:
             som += saum**(p/l)
         return (som/len(self.individus))**(1/p)
 
+    def opinion_optimale(self):
+        global coefficient_norme_l, coefficient_norme_p
+        nombre_de_try = 10
+        nombre_etape = 20
+        l_opinon = []
+        l_mesure = []
+
+        for _ in range(nombre_de_try):
+            opinion = np.random.random(self.taille_opinion)
+            for etape in range(nombre_etape):
+                pas = 1/(etape+3)
+                for j in range(self.taille_opinion):
+
+                    opinion[j] += pas
+                    val_plus = self.mesure(opinion)
+                    opinion[j] -= opinion[j] + pas*2
+                    val_moins = self.mesure(opinion)
+                    opinion[j] += pas
+
+                    val = self.mesure(opinion)
+                    if val_plus < val_moins:
+                        if val_plus < val:
+                            opinion[j] += pas
+                    else:
+                        if val_moins < val:
+                            opinion[j] += pas
+            
+            l_opinon.append(opinion.copy())
+            l_mesure.append(self.mesure(opinion))
+        
+        return l_opinon[np.argmin(l_mesure)]
 
 def interaction(a,b):
     global nb_neg, nb_pos
