@@ -4,7 +4,7 @@ import parametres
 c_place_choix_interactions = parametres.c_place_choix_interactions
 opinion_bornee = parametres.opinion_bornee
 
-params_gaussienne = [((1, 1), 0.4), ((-2, 2), 0.3), ((0, 3), 0.4)]
+params_gaussienne = [((-1, 1), 0.42), ((-2, 2), 0.32), ((0, 3), 0.52), ((0, 3), 0.52)]
 
 class Individu:
     def __init__(self, taille_opinion:int, taille_place_societe:int, abstension_factor = 0.5) -> None:

@@ -307,20 +307,20 @@ class Population:
 
     def opinion_optimale(self):
         global coefficient_norme_l, coefficient_norme_p
-        nombre_de_try = 10
-        nombre_etape = 20
+        nombre_de_try = 3
+        nombre_etape = 60
         l_opinon = []
         l_mesure = []
 
         for _ in range(nombre_de_try):
-            opinion = np.random.random(self.taille_opinion)
+            opinion = np.random.normal(0,5,self.taille_opinion)
             for etape in range(nombre_etape):
-                pas = 1/(etape+3)
+                pas = 4/(etape+1)
                 for j in range(self.taille_opinion):
 
                     opinion[j] += pas
                     val_plus = self.mesure(opinion)
-                    opinion[j] -= opinion[j] + pas*2
+                    opinion[j] -= pas*2
                     val_moins = self.mesure(opinion)
                     opinion[j] += pas
 
@@ -330,11 +330,11 @@ class Population:
                             opinion[j] += pas
                     else:
                         if val_moins < val:
-                            opinion[j] += pas
+                            opinion[j] -= pas
             
             l_opinon.append(opinion.copy())
             l_mesure.append(self.mesure(opinion))
-        
+        #print(l_mesure)
         return l_opinon[np.argmin(l_mesure)]
 
 def interaction(a,b):
