@@ -4,6 +4,8 @@ import parametres
 c_place_choix_interactions = parametres.c_place_choix_interactions
 opinion_bornee = parametres.opinion_bornee
 
+params_gaussienne = [((1, 1), 0.4), ((-2, 2), 0.3), ((0, 3), 0.4)]
+
 class Individu:
     def __init__(self, taille_opinion:int, taille_place_societe:int, abstension_factor = 0.5) -> None:
         self.taille_opinion = taille_opinion
@@ -37,13 +39,6 @@ class Individu:
                         self.sociabilisation.append(b)
                         add = False
 
-
-    def set_representatif_de_la_realite():
-        # but représenter de manière plus réaliste la répartition des individus en fonction de leur background social 
-        # Et des liens entre l'influence et ce background
-        # et des liens initiaux entre ce background et leurs opinions initiales (avant toute sociabilisation)
-        pass
-
     def vote(self, lc):
         charismes = [c.charisme for c in lc]
         programmes = np.array([c.programme_publique for c in lc])
@@ -59,3 +54,17 @@ class Individu:
         programmes = np.array([c.programme_publique for c in lc])
         d = np.linalg.norm(programmes - self.opinion, axis = 1)/charismes
         return np.argsort(d)
+    
+    def set_representatif_de_la_realite(self, ecart_type_influence, ecart_type_sociabilisation):
+        global params_gaussienne
+        # but représenter de manière plus réaliste la répartition des individus en fonction de leur background social 
+        # Et des liens entre l'influence et ce background
+        # et des liens initiaux entre ce background et leurs opinions initiales (avant toute sociabilisation)
+        self.influence = np.random.exponential(1/ecart_type_influence)
+        self.sociabilisation = round(1+ np.random.exponential(1/ecart_type_sociabilisation))
+        (esperance, variance) = params_gaussienne[np.random.randint(0, len(params_gaussienne))]
+        if opinion_bornee:
+            pass
+        else :
+            self.opinion = np.random.normal(esperance, variance,self.taille_opinion)
+        self.place_societe = np.random.random(self.taille_place_societe)

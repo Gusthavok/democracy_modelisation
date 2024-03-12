@@ -2,16 +2,19 @@ import population
 
 pops = population.Population()
 
-pops.initialisation_aleatoire_population(1000, 2, 0)
+pops.initialisation_aleatoire_population(1000, 2, 0, type_population="representatif_de_la_realite")
 
-pops.initialisation_aleatoire_candidats(30)
+pops.initialisation_aleatoire_candidats(5)
 
 couleurs_votants = ['blue', 'green', 'red', 'cyan', 'magenta', 'yellow']*5
-couleurs_candidats = ['black' for _ in range(30)]
+couleurs_candidats = ['black' for _ in range(5)]
 
-print(pops.condorcet().programme_publique)
+##print(pops.condorcet().programme_publique)
 
-pops.placement_strategique_candidats(0.1, pops.pts_std, nombre_iteration=20)
+pops.placement_strategique_candidats(1, pops.pts_std, nombre_iteration=15)
+
+pops.affiche_1()
+
 pops.affiche_2(couleurs_votants, couleurs_candidats)
 print(pops.election_2tours().programme_publique)
 print(pops.election_geneK().programme_publique)
