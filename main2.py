@@ -53,5 +53,6 @@ print("approuvence")
 print(pops.election_approbation().programme_publique)
 print(pops.mesure(pops.election_approbation().programme_publique))
 
+print("représentativité maxmimale optimisée de batard par descente de gradient du turfu machine learnig apprentissage statistique de kheng")
 print(pops.opinion_optimale())
 print(pops.mesure(pops.opinion_optimale()))
